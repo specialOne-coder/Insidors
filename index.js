@@ -1,20 +1,6 @@
 
 const fs = require('fs');
 
-function saveDataToJsonFile(data, filename) {
-    // Convertir les données en JSON
-    const jsonData = JSON.stringify(data, null, 2);
-
-    // Écrire les données JSON dans un fichier
-    fs.writeFile(filename, jsonData, 'utf8', (err) => {
-        if (err) {
-            console.error('Une erreur est survenue lors de l\'écriture du fichier JSON:', err);
-            return;
-        }
-        console.log('Les données ont été enregistrées avec succès dans', filename);
-    });
-}
-
 function countAndSortTimeIntervals(priceHistory) {
     const intervalCounts = {};
     console.log(priceHistory[0].unixTime);
@@ -46,48 +32,18 @@ function countAndSortTimeIntervals(priceHistory) {
     const sortedArray = Object.entries(intervalCounts).sort((a, b) => b[1] - a[1]);
 
     // Retourner les résultats avec les timestamps
+    console.log({firstTimestamp});
+    
     return {
-        firstTimestamp: new Date(firstTimestamp).toISOString(),
-        lastTimestamp: new Date(lastTimestamp).toISOString(),
+        firstTimestamp: new Date(firstTimestamp*1000).toLocaleString(),
+        lastTimestamp: new Date(lastTimestamp*1000).toLocaleString(),
         sortedIntervals: sortedArray
     };
 }
 
 
 
-async function getAllPrices(address, address_type, time_from, time_to) {
-    const type = '1m';
-    let allData = [];
-    let current_time_from = time_from;
 
-    while (current_time_from < time_to) {
-        const url = `https://public-api.birdeye.so/defi/history_price?address=${address}&address_type=${address_type}&type=${type}&time_from=${current_time_from}&time_to=${time_to}`;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'x-api-key': `267999e1808a446ca11722232924ff08` // Adding the API key in the header
-            }
-        });
-        const result = await response.json();
-
-        // Vérifier si la réponse est un succès
-        if (!result.success || !result.data || !result.data.items.length) {
-            break;
-        }
-
-        const items = result.data.items;
-        allData = allData.concat(items);
-
-        if (items.length < 1000) {
-            // Si le nombre de résultats est inférieur à 1000, on a récupéré toutes les données
-            break;
-        }
-
-        // Mettre à jour le time_from pour la prochaine requête
-        current_time_from = items[items.length - 1].unixTime + 1;
-    }
-    return allData;
-}
 
 // ecris une fonction js qui prend en paramètre un tableau et l'enregistre dans un fichier json
 
@@ -1600,15 +1556,10 @@ async function main() {
         ]
     };
 
-    displayAsciiArt();
-    await getAllPrices('So11111111111111111111111111111111111111112', 'token', 1691997839, 1723926901)
-        .then(prices => {
-            // Enregistrer les données dans un fichier JSON
-            saveDataToJsonFile(prices, 'prices.json');
-        })
-        .catch(error => console.error(error));
-    // const result = countAndSortTimeIntervals(data.price_history);
-    // console.log("Start Fin date ", result);
+    const jsonData = JSON.parse(fs.readFileSync('data/Prime/Prime_prices.json', 'utf8'));
+
+    const result = countAndSortTimeIntervals(jsonData);
+    console.log("Start Fin date ", result);
     // console.log("History : ", result.sortedIntervals);
 
 }

@@ -1,20 +1,30 @@
 import fs from 'fs';
-
+import path from 'path';
 
 /**
  * Save data to a JSON file
  */
-export function saveDataToJsonFile(data: any, filename: string) {
+export function saveDataToJsonFile(data: any, filename: string, type:string) {
     // Convertir les données en JSON
     const jsonData = JSON.stringify(data, null, 2);
 
+    // Chemin complet du dossier et du fichier
+    const dirPath = path.join('data', filename);
+    const filePath = path.join(dirPath, `${filename}_${type}.json`);
+    
+    // Vérifier si le dossier existe
+    if (!fs.existsSync(dirPath)) {
+        // Créer le dossier s'il n'existe pas
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+
     // Écrire les données JSON dans un fichier
-    fs.writeFile(filename, jsonData, 'utf8', (err) => {
+    fs.writeFile(filePath, jsonData, 'utf8', (err) => {
         if (err) {
-            console.error('Une erreur est survenue lors de l\'écriture du fichier JSON:', err);
+            console.error('Write File Error :', err);
             return;
         }
-        console.log('Les données ont été enregistrées avec succès dans', filename);
+        console.log('Data save successfully', filePath);
     });
 }
 
