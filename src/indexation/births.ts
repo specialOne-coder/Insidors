@@ -1,9 +1,10 @@
+import { HELLO_MOON_KEY } from "@configs/index";
 import { getBlockscoutApiUrl } from "@utils/index";
 import { TokenInfo } from "src/types";
 
 
 export const getEvmTokenBirth = async (network: string, address: string): Promise<TokenInfo> => {
-    const [addressUrl, transactionUrl] = getBlockscoutApiUrl(network, address);
+    const [addressUrl, transactionUrl, _] = getBlockscoutApiUrl(network, address);
     const addressInfo = await fetch(`${addressUrl + address}`);
     let infos = await addressInfo.json();
     const creationTransactionHash = infos.creation_tx_hash;
@@ -21,7 +22,7 @@ export async function getSolanaTokenBirth(tokenAddress: string): Promise<TokenIn
 
     const headers = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer db078dd1-b699-4870-8e39-a70af38e4c9e',
+        'Authorization': `Bearer ${HELLO_MOON_KEY}`,
         'Content-Type': 'application/json'
     };
 

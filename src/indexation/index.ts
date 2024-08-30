@@ -1,8 +1,19 @@
 import { saveDataToJsonFile } from "@utils/index";
-import { BirdeyePriceHistory } from "src/types";
+import { BirdeyePriceHistory, Pair } from "src/types";
 import { getEvmTokenBirth, getSolanaTokenBirth } from "./births";
+import { getEvmTokenPairs, getEvmTokenTrades } from "./trades";
+import { BIRDEYE_KEY } from "@configs/index";
 
 
+/**
+ * Get the historical prices of a token
+ * @param tokenName the name of the token
+ * @param chain the chain of the token
+ * @param address the address of the token
+ * @param address_type the type of the address
+ * @param time_from the time from which to get the historical prices
+ * @returns the historical prices of the token
+ */
 async function getTokenHistoricalPrices(tokenName: string, chain: string, address: string, address_type: string, time_from: string) {
     const type = '1m';
     let allData: BirdeyePriceHistory[] = [];
@@ -16,11 +27,11 @@ async function getTokenHistoricalPrices(tokenName: string, chain: string, addres
     while (current_time_from < time_to) {
         const url = `https://public-api.birdeye.so/defi/history_price?address=${address}&address_type=${address_type}&type=${type}&time_from=${current_time_from}&time_to=${time_to}`;
         console.log({ url });
-        
+
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'x-api-key': `267999e1808a446ca11722232924ff08`,
+                'x-api-key': BIRDEYE_KEY,
                 'x-chain': chain == 'eth' ? 'ethereum' : chain
             }
         });
@@ -45,9 +56,23 @@ async function getTokenHistoricalPrices(tokenName: string, chain: string, addres
     return allData;
 }
 
+
+async function getTokenHistoricalTrades(tokenName: string, chain: string, address: string, address_type: string, time_from: string) {
+    let pairinhistoric: Pair[] = await getEvmTokenPairs(chain, address);
+    await getEvmTokenTrades(pairinhistoric, chain);
+}
+
+/**
+ * Index all necessary datas for a given chain and token
+ * @param chainAndToken the chain and token to index
+ */
 export async function indexAll(chainAndToken: string) {
+    // Split chain and token
     const [chain, token] = chainAndToken.split(":");
-    const info = chain == "solana" ? await getSolanaTokenBirth(token) : await getEvmTokenBirth(chain, token);
-    console.log({ info });
-    await getTokenHistoricalPrices(info.name, chain, token, 'token', info.birth.toFixed(0).toString());
+    // Index prices
+    // const info = chain == "solana" ? await getSolanaTokenBirth(token) : await getEvmTokenBirth(chain, token);
+    // await getTokenHistoricalPrices(info.name, chain, token, 'token', info.birth.toFixed(0).toString());
+
+    // Index trades
+    await getTokenHistoricalTrades(token, chain, token, 'token', '0');
 }

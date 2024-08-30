@@ -82,6 +82,7 @@ export function displayInsidor() {
  */
 export function getBlockscoutApiUrl(network: string, address: string) {
     return [`https://${network}.blockscout.com/api/v2/addresses/`,
-    `https://${network}.blockscout.com/api/v2/transactions/`
+    `https://${network}.blockscout.com/api/v2/transactions/`,
+    `https://${network}.blockscout.com/api/v2/addresses/${address}/counters`
     ]
 }
