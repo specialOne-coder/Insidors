@@ -42,17 +42,6 @@ function countAndSortTimeIntervals(priceHistory) {
 }
 
 
-
-
-
-// ecris une fonction js qui prend en paramètre un tableau et l'enregistre dans un fichier json
-
-
-
-// Utilisation de la fonction
-
-
-
 async function main() {
 
     // Exemple d'utilisation :
