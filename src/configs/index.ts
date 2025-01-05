@@ -1,4 +1,0 @@
-export const HELLO_MOON_KEY = 'db078dd1-b699-4870-8e39-a70af38e4c9e';
-export const MOBULA_KEY = '5a4653a3-3e28-4f65-b4b0-2cba8a57b2c1'
-export const BIRDEYE_KEY = '267999e1808a446ca11722232924ff08';
-export const SOLTRACKER_KEY = '267999e1808a446ca11722232924ff08';
